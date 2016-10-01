@@ -11,8 +11,11 @@ namespace OrderedListApi.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [JsonIgnore]
+        [Required]
         public int ListId { get; set; }
+        [Required]
         public int Position { get; set; }
+        [Required]
         public string Name { get; set; }
     }
 }

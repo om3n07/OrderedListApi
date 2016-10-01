@@ -19,6 +19,7 @@ namespace OrderedListApi.Models
 
         // Smaller than the Guid, better for using as a FK
         [Key]
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonIgnore]
         public int ListId { get; set; }

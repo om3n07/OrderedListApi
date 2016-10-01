@@ -70,6 +70,7 @@ namespace OrderedListApi.BusinessLayer
                     else
                     {
                         // Insert, otherwise
+                        item.ListId = listId;
                         _dbContext.OrderedListItems.Add(item);
                     }
                 }

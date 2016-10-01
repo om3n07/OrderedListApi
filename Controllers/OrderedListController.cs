@@ -24,56 +24,40 @@ namespace OrderedListApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Returns OrderedListItms by ClientReferenceId.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("OrderedListItems/{listId}")]
-        public HttpResponseMessage GetOrderedListItems([FromUri] Guid listId)
+        [Route("OrderedListItems/{clientReferenceId}")]
+        public HttpResponseMessage GetOrderedListItems([FromUri] string clientReferenceId)
         {
-            var listItems = _orderedListItemBusinessLayer.GetOrderedListItems(listId);
+            var lId = Guid.Parse(clientReferenceId);
+            var listItems = _orderedListItemBusinessLayer.GetOrderedListItems(lId);
             return this.Request.CreateResponse(HttpStatusCode.OK, listItems);
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("OrderedListItems")]
-        public HttpResponseMessage GetAllOrderedListItems()
-        {
-            var listItems = _orderedListItemBusinessLayer.GetOrderedListItems();
-            return this.Request.CreateResponse(HttpStatusCode.OK, listItems);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("OrderedListDetails")]
-        public HttpResponseMessage GetAllOrderedListDetails()
-        {
-            var listDetails = _orderedListItemBusinessLayer.GetOrderedListDetails();
-            return this.Request.CreateResponse(HttpStatusCode.OK, listDetails);
-        }
-
-        /// <summary>
-        /// 
+        /// Updates OrderedListItems.
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        [Route("OrderedListItems/{listId}")]
-        public HttpResponseMessage SaveOrderedListItems([FromUri] Guid listId, 
+        [Route("OrderedListItems/{clientReferenceId}")]
+        public HttpResponseMessage SaveOrderedListItems([FromUri] string clientReferenceId, 
             [FromBody] List<OrderedListItem> orderedListItems)
         {
-             _orderedListItemBusinessLayer.UpdateOrderedlistItems(orderedListItems, listId);
+            var lId = Guid.Parse(clientReferenceId); 
+
+            if (!IsOrderedListOrdered(orderedListItems))
+            {
+                return this.Request.CreateResponse(HttpStatusCode.BadRequest, "Items not in order.");
+            }
+            
+             _orderedListItemBusinessLayer.UpdateOrderedlistItems(orderedListItems, lId);
             return this.Request.CreateResponse(HttpStatusCode.NoContent);
         }
 
         /// <summary>
-        /// 
+        /// Creates OrderedListItems.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -82,6 +66,21 @@ namespace OrderedListApi.Controllers
         {
             var listId = _orderedListItemBusinessLayer.SaveOrderedlistItems(orderedListItems);
             return this.Request.CreateResponse(HttpStatusCode.OK, listId);
+        }
+
+        /// <summary>
+        /// Used for validating OrderedListItems Request.
+        /// </summary>
+        /// <param name="orderedListItems"></param>
+        /// <returns></returns>
+        private bool IsOrderedListOrdered(List<OrderedListItem> orderedListItems)
+        {
+            var numItems = orderedListItems.Count + 1;
+            for (var i = 1; i < numItems; i++)
+            {
+                if (!orderedListItems.Exists(item => item.Position == i)) return false;
+            }
+            return true;
         }
     }
 }
