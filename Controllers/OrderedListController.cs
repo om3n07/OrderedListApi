@@ -78,6 +78,8 @@ namespace OrderedListApi.Controllers
         /// <returns></returns>
         private bool IsOrderedListOrdered(List<OrderedListItem> orderedListItems)
         {
+            if (orderedListItems == null || orderedListItems.Count == 0) return true;
+
             var numItems = orderedListItems.Count + 1;
             for (var i = 1; i < numItems; i++)
             {
